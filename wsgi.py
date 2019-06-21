@@ -18,10 +18,18 @@ def hello():
    return "Hello World!"
 
 from schemas import products_schema
-@app.route('/products')
+@app.route('/products') 
 def get_products():
     products = db.session.query(Product).all() # SQLAlchemy request => 'SELECT * FROM products'
     return products_schema.jsonify(products)
+
+@app.route('/sleep')
+def products():
+    from tasks import very_slow_add
+    very_slow_add.delay(1, 2) # This pushes a task to Celery and does not block.
+
+    products = db.session.query(Product).all()
+    return products_schema.jsonify(products) 
 
 from schemas import product_schema
 @app.route('/products/<int:id>', methods=['GET'])

@@ -1,6 +1,6 @@
 # tasks.py
 from celery import Celery
-from app import create_app
+from wsgi import app
 
 def make_celery(app):
     celery = Celery(
@@ -17,4 +17,9 @@ def make_celery(app):
     celery.Task = ContextTask
     return celery
 
-celery = make_celery(create_app())
+celery = make_celery(app)
+@celery.task()
+def very_slow_add(a, b):
+    import time
+    time.sleep(3)
+    return a + b
